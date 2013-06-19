@@ -1,13 +1,14 @@
 class User < ActiveRecord::Base
-  has_and_belongs_to_many :skills
+  has_many :skills, :through => :proficiencies
+  has_many :proficiencies
 
   def set_proficiency_for(skill, proficiency_level)
-    user_skill = SkillsUser.where(user_id: self.id, skill_id: skill.id).first
-    user_skill.proficiency_level = proficiency_level
-    user_skill.save
+    proficiency = self.proficiencies.find_by_skill_id(skill.id)
+    proficiency.level = proficiency_level
+    proficiency.save
   end
 
   def proficiency_for(skill)
-    SkillsUser.where(user_id: self.id, skill_id: skill.id).first.proficiency_level
+    Proficiency.where(user_id: self.id, skill_id: skill.id).first.level
   end
 end
